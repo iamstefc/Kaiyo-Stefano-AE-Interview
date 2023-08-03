@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: rds
+    tables:
+      - name: stop_types
+        description: '{{ doc("stop_types") }}'
+        columns:
+          - name: created_at
+            description: "timestamp when this record was created"
+          - name: name
+            description: "the name of the valid stop type"
+            tests:
+                - not_null
+                - accepted_values:
+                    values: ['Submission', 'Delivery', 'Return', 'Exchange', 'Customer', 'Delivery Provider', 'Other', 'Warehouse']
+                    config:
+                      store_failures: false

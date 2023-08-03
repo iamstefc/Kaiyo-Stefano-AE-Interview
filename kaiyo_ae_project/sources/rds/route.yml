@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+  - name: rds
+    tables:
+      - name: route
+        description: >
+          A collection of stops for a truck to attain a particular objective. Objectives can range from
+          transferring items between warehouses, picking up items for submissions, or delivering for sales.
+        columns:
+          - name: created_at
+            description: "timstamp when this record/route was created"
+            tests:
+              - not_null
+          - name: date
+            description: "date this route was scheduled to occur"
+            tests:
+              - not_null
+          - name: id
+            description: "unique identifier for this route"
+            tests:
+                - unique
+                - not_null
+          - name: updated_at
+            description: "timestamp when this record was last updated"
+          - name: origin_facility_id
+            description: "rds.facilities.id -- the facility that this route started from"
+            tests:
+                - not_null
+          - name: route_type
+            description: "what kind of route is this? Can be one of {'Service Area Transfer', 'Local Transfer', 'Delivery'}"
+            tests:
+                - not_null
+                - accepted_values:
+                    values: ['Service Area Transfer', 'Local Transfer', 'Delivery']
+                    config:
+                      store_failures: false
+          - name: status
+            description: "the current status of this route. Can be one of {'Cancelled', 'Pending', 'In Progress', 'Completed', 'Break'}"
+            tests:
+                - not_null
+                - accepted_values:
+                    values: ['Cancelled', 'Pending', 'In Progress', 'Completed', 'Break']
+                    config:
+                      store_failures: false

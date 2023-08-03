@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: rds
+    tables:
+      - name: stop_statuses
+        description: '{{ doc("stop_statuses") }}'
+        columns:
+          - name: created_at
+            description: "timestamp when this record was created"
+          - name: name
+            description: "the status of this stop"
+            tests:
+                - not_null
+                - accepted_values:
+                    values: ['Not Started', 'On The Way', 'Arrived', 'Waiting for customer', 'On Premise', 'Completed',
+                            'Truck Cancelled', 'Front Office Cancelled', 'Truck Rescheduled', 'Front Office Rescheduled',
+                            'Front Office Merged', 'Left Truck']
+                    config:
+                      store_failures: false

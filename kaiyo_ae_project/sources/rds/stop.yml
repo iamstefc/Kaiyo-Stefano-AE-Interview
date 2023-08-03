@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+  - name: rds
+    tables:
+      - name: stop
+        description: "Represents a stop on a route for delivering/picking up/transferring items."
+        columns:
+          - name: address_id
+            description: "rds.addresses.id -- the address associated with this stop"
+            tests:
+                - not_null:
+                    where: date > '2022-05-01'
+          - name: created_at
+            description: "timestamp when this record/stop was created"
+            tests:
+              - not_null
+          - name: date
+            description: "date the stop is scheduled"
+            tests:
+              - not_null
+          - name: id
+            description: "unique identifier for this stop"
+            tests:
+              - not_null
+              - unique
+          - name: route_id
+            description: "rds.route.id -- the route that this stop belongs to"
+          - name: status
+            description: "rds.stop_statuses.name -- the current status of this stop"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('rds', 'stop_statuses')
+                  field: name
+          - name: stop_type
+            description: "rds.stop_types.name -- what kind of stop is this?"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: [
+                    'Warehouse',
+                    'Other',
+                    'Customer',
+                    'Delivery Provider',
+                  ]
+          - name: updated_at
+            description: "timestamp when this record was last updated"
+            tests:
+              - not_null
+          - name: facility_id
+            description: "rds.facilities.id -- if stop_type = 'Warehouse' the facility that the stop took place at"
+            tests:
+                - not_null:
+                    where: "stop_type = 'Warehouse'"

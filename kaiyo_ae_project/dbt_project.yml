@@ -1,0 +1,41 @@
+name: kaiyo
+version: '1.6.0'
+require-dbt-version: ['<2.0.0']
+config-version: 2
+profile: 'kaiyo_ae_project'
+
+dispatch:
+  - macro_namespace: dbt
+    search_order: ['dbt']
+
+
+# These configurations specify where dbt should look for different types of files.
+# The `source-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models", "sources"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+    - "target"
+    - "dbt_packages"
+
+
+# Configuring models
+models:
+  +bind: false  # this is a redshift specific setting https://blog.getdbt.com/using-redshift-s-late-binding-views-with-dbt/
+
+
+# This is changes the configuation of whether DBT should quote databases, schemas, or identifiers
+# when creating relations and resolving the 'ref' function
+# This needed to be set to False due to a dbt test --store-failures bug regarding the
+# accepted_values test.  Storing failures from accepted_value tests would fail when checking for
+# camel cased values.
+quoting:
+  database: false
+  schema: false
+  identifier: true

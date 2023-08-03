@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+  - name: rds
+    tables:
+      - name: stop_status_log
+        description: '{{ doc("stop_status_log") }}'
+        columns:
+          - name: created_at
+            description: "timestamp when this log/stop status was created/logged. not reliable prior to '2021-03-18'"
+            tests:
+              - not_null
+          - name: id
+            description: "unique identifier for this event"
+            tests:
+              - unique
+              - not_null
+          - name: status
+            description: "rds.stop_statuses.name -- what exactly happened at this point in time for the stop"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('rds', 'stop_statuses')
+                  field: name
+          - name: stop_id
+            description: "rds.stop.id -- the stop associated with this status"
+            tests:
+              - not_null
+              - dbt_utils.relationships_where:
+                  to: source('rds', 'stop')
+                  field: id
+                  # for the purposes of this project, you can ignore the stops that entered these statuses
+                  from_condition: "status not in ('Not Started', 'Front Office Cancelled', 'Front Office Rescheduled', 'Front Office Merged')"
+          - name: timestamp
+            description: "timestamp when this log/stop status was created/logged"
+            tests:
+              - not_null
+          - name: updated_at
+            description: "timestamp when this record was last updated"
+            tests:
+              - not_null
+          - name: user_id
+            description: "rds.user.id -- the user that logged this event"
+            tests:
+              - not_null
